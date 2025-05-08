@@ -222,6 +222,26 @@ class GamesDal:
             return 'Game was unable to be added. Check your inputs and try again.'
         finally:
             cursor.close()
+
+    def updateGame(connection, name, date, homeScore, awayScore):
+        connection = db_utils.ensure_connection(connection)
+        cursor = connection.cursor()
+        try:
+            cursor.callproc("updateGame", (name, date, homeScore, awayScore,))
+            res = None
+            for result in cursor.stored_results():
+                res = result.fetchone()
+                break
+            if res and res[0] == -1:
+                return 'Game not found. Try again.'
+            cursor.callproc("updateGameStatus", (name, date,))
+            connection.commit()
+            return 'Game has been updated.'
+        except Exception as e:
+            print(e)
+            return 'Game was unable to be updated. Check your inputs and try again.'
+        finally:
+            cursor.close()
     
     # def addPassenger(connection, passengerName, address, phone):
     #     cursor = connection.cursor()

@@ -40,11 +40,14 @@ def app():
         addGameButton = Button(root, text="Add Game", command=lambda: Games.addGame(root, connection))
         addGameButton.grid(row=1, column=2, pady=10)
 
-        addPointsButton = Button(root, text="Add Points", command=lambda: PointsScored.addPointsScored(root, connection))
-        addPointsButton.grid(row=1, column=3, pady=10)
+        updateGameButton = Button(root, text="Update Game", command=lambda: Games.updateGame(root, connection))
+        updateGameButton.grid(row=1, column=3, pady=10)
+
+        addPointsButton = Button(root, text="Add Player Points", command=lambda: PointsScored.addPointsScored(root, connection))
+        addPointsButton.grid(row=1, column=4, pady=10)
 
         deletePlayerButton = Button(root, text="Delete Player", command=lambda: Players.deletePlayer(root, connection))
-        deletePlayerButton.grid(row=1, column=4, pady=10)
+        deletePlayerButton.grid(row=1, column=5, pady=10)
 
     def displayOutputBox(root, w, h):
         if currentOutput["box"]:
@@ -174,6 +177,41 @@ def app():
             outputBox.insert(END, res)
             showRes(root, connection, res)
 
+        def updateGame(root, connection):
+            for widget in root.grid_slaves():
+                widget.grid_forget()
+            # Labels
+            title = Label(root, text='Update Game')
+            title.grid(row=0, columnspan=2, padx=5)
+            teamLabel = Label(root, text='Either Team Name')
+            teamLabel.grid(row=1, column=0, padx=5)
+            dateLabel = Label(root, text='Date YYYY-MM-DD hh:mm:ss')
+            dateLabel.grid(row=2, column=0, padx=5)
+            homeScoreLabel = Label(root, text='Home Score')
+            homeScoreLabel.grid(row=3, column=0, padx=5)
+            awayScoreLabel = Label(root, text='Away Score')
+            awayScoreLabel.grid(row=4, column=0, padx=5)
+            # Inputs
+            team = Entry(root, width=20)
+            team.grid(row=1, column=1)
+            date = Entry(root, width=20)
+            date.grid(row=2, column=1)
+            homeScore = Entry(root, width=20)
+            homeScore.grid(row=3, column=1)
+            awayScore = Entry(root, width=20)
+            awayScore.grid(row=4, column=1)
+
+            # Submit button
+            submitUpdateGameButton = Button(root, text='Update Game', command=lambda: Games.submitUpdateGame(root, connection, team.get(), date.get(), homeScore.get(), awayScore.get()))
+            submitUpdateGameButton.grid(row=5, column=1, columnspan=2, pady=10, padx=10, ipadx=100)
+
+        def submitUpdateGame(root, connection, name, date, homeScore, awayScore):
+            res = bll.Games.updateGame(connection, name, date, homeScore, awayScore)
+            outputBox = displayOutputBox(root, 35, 1)
+            outputBox.delete("1.0", END)
+            outputBox.insert(END, res)
+            showRes(root, connection, res)
+
     class Teams:
         def addTeam(root, connection):
             for widget in root.grid_slaves():
@@ -204,22 +242,24 @@ def app():
             # Labels
             title = Label(root, text='Input Points Scored')
             title.grid(row=0, columnspan=2, padx=5)
+            title = Label(root, text='NOTE: THIS WILL AFFECT THE GAME SCORE')
+            title.grid(row=1, columnspan=2, padx=5)
             nameLabel = Label(root, text='Player Name')
-            nameLabel.grid(row=1, column=0, padx=5)
+            nameLabel.grid(row=2, column=0, padx=5)
             dateLabel = Label(root, text='Date YYYY-MM-DD hh:mm:ss')
-            dateLabel.grid(row=2, column=0, padx=5)
+            dateLabel.grid(row=3, column=0, padx=5)
             pointsLabel = Label(root, text='Points')
-            pointsLabel.grid(row=3, column=0, padx=5)
+            pointsLabel.grid(row=4, column=0, padx=5)
             # Inputs
             name = Entry(root, width=20)
-            name.grid(row=1, column=1)
+            name.grid(row=2, column=1)
             date = Entry(root, width=20)
-            date.grid(row=2, column=1)
+            date.grid(row=3, column=1)
             points = Entry(root, width=20)
-            points.grid(row=3, column=1)
+            points.grid(row=4, column=1)
             # Submit button
             submitPointsButton = Button(root, text='Add Points', command=lambda: PointsScored.submitPointsScored(root, connection, name.get(), date.get(), points.get()))
-            submitPointsButton.grid(row=4, column=0, columnspan=2, pady=10, padx=10, ipadx=100)
+            submitPointsButton.grid(row=5, column=0, columnspan=2, pady=10, padx=10, ipadx=100)
 
         def submitPointsScored(root, connection, name, date, points):
             res = bll.PointsScored.addPointsScored(connection, name, date, points)

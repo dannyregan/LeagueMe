@@ -23,7 +23,7 @@ class Views:
     
     def displayLeagueStandings(connection):
         data = dal.TeamsDal.league_standings(connection)
-        headers = ['Team', 'Games Played', 'Wins', 'Losses', 'Win %']
+        headers = ['Team', 'Games Played', 'Wins', 'Losses', 'Ties', 'Win %']
         return tabulate.tabulate(data, headers=headers, tablefmt='fancy_grid')
     
 class Teams:
@@ -45,6 +45,10 @@ class Games:
         res = dal.GamesDal.addGame(connection, homeTeam, awayTeam, date, gameType, completed)
         return res
     
+    def updateGame(connection, name, date, homeScore, awayScore):
+        res = dal.GamesDal.updateGame(connection, name, date, homeScore, awayScore)
+        return res
+        
 class PointsScored:
     def addPointsScored(connection, name, date, points):
         res = dal.PointsScoredDal.addPointsScored(connection, name, date, points)
