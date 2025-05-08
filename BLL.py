@@ -35,3 +35,13 @@ class Players:
     def addPlayer(connection, playerName, teamName, jerseyNum):
         res = dal.PlayersDal.addPlayer(connection, playerName, teamName, jerseyNum)
         return res
+    
+class Games:
+    def addGame(connection, homeTeam, awayTeam, date, gameType, completed):
+        res = dal.GamesDal.addGame(connection, homeTeam, awayTeam, date, gameType, completed)
+        return res
+    
+class PointsScored:
+    def addPointsScored(connection, name, date, points):
+        res = dal.PointsScoredDal.addPointsScored(connection, name, date, points)
+        return res

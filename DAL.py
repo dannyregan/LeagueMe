@@ -115,6 +115,19 @@ class PlayersDal:
             return 'Player was unable to be added.'
         finally:
             cursor.close()
+
+    def deletePlayer(connection, playerName):
+        connection = db_utils.ensure_connection(connection)
+        cursor = connection.cursor()
+        try:
+            cursor.callproc("deletePlayer", (playerName,))
+            connection.commit()
+            return f'{playerName} has been deleted.'
+        except Exception as e:
+            print(e)
+            return 'Player was unable to be deleted.'
+        finally:
+            cursor.close()
     
     # def addTrip(connection, vesselName, passengerName, dateAndTime, lengthOfTrip, totalPassengers):
     #     cursor = connection.cursor()
@@ -192,6 +205,19 @@ class GamesDal:
         cursor.close()
         return result
     
+    def addGame(connection, homeTeam, awayTeam, date, gameType, completed):
+        connection = db_utils.ensure_connection(connection)
+        cursor = connection.cursor()
+        try:
+            cursor.callproc("addgame", (homeTeam, awayTeam, date, gameType, completed,))
+            connection.commit()
+            return f'Game has been added.'
+        except Exception as e:
+            print(e)
+            return 'Game was unable to be added.'
+        finally:
+            cursor.close()
+    
     # def addPassenger(connection, passengerName, address, phone):
     #     cursor = connection.cursor()
     #     try:
@@ -230,8 +256,18 @@ class GamesDal:
     #     return result
   
 class PointsScoredDal:
-    def temp():
-        return 0
+    def addPointsScored(connection, name, date, points):
+        connection = db_utils.ensure_connection(connection)
+        cursor = connection.cursor()
+        try:
+            cursor.callproc("addPointsScored", (name, date, points,))
+            connection.commit()
+            return f'Point(s) added.'
+        except Exception as e:
+            print(e)
+            return 'Point(s) unable to be added.'
+        finally:
+            cursor.close()
 
 
     # def addPassenger(connection, passengerName, address, phone):
