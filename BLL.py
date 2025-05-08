@@ -30,3 +30,8 @@ class Teams:
     def addTeam(connection, teamName):
         res = dal.TeamsDal.addTeam(connection, teamName)
         return res
+    
+class Players:
+    def addPlayer(connection, playerName, teamName, jerseyNum):
+        res = dal.PlayersDal.addPlayer(connection, playerName, teamName, jerseyNum)
+        return res

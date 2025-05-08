@@ -34,6 +34,8 @@ def app():
         addTeamButton = Button(root, text="Add Team", command=lambda: Teams.addTeam(root, connection))
         addTeamButton.grid(row=0, column=3, padx=10, pady=10)
 
+        addPlayerButton = Button(root, text="Add Player", command=lambda: Players.addPlayer(root, connection))
+        addPlayerButton.grid(row=0, column=4, padx=10, pady=10)
 
     def displayOutputBox(root, w, h):
         if currentOutput["box"]:
@@ -58,6 +60,36 @@ def app():
             outputBox = displayOutputBox(root, 195, 45)
             outputText = bll.Views.displayTopScorers(connection)
             outputBox.insert(END, outputText)
+
+        def addPlayer(root, connection):
+            for widget in root.grid_slaves():
+                widget.grid_forget()
+            # Labels
+            title = Label(root, text='Add New Player')
+            title.grid(row=0, columnspan=2, padx=5)
+            nameLabel = Label(root, text='Name')
+            nameLabel.grid(row=1, column=0, padx=5)
+            teamLabel = Label(root, text='Team')
+            teamLabel.grid(row=2, column=0, padx=5)
+            numberLabel = Label(root, text='Number')
+            numberLabel.grid(row=3, column=0, padx=5)
+            # Inputs
+            name = Entry(root, width=20)
+            name.grid(row=1, column=1)
+            team = Entry(root, width=20)
+            team.grid(row=2, column=1)
+            number = Entry(root, width=20)
+            number.grid(row=3, column=1)
+            # Submit button
+            submitPlayerButton = Button(root, text='Add Player', command=lambda: Players.submitPlayer(root, connection, name.get(), team.get(), number.get()))
+            submitPlayerButton.grid(row=4, column=0, columnspan=2, pady=10, padx=10, ipadx=100)
+
+        def submitPlayer(root, connection, playerName, teamName, number):
+            res = bll.Players.addPlayer(connection, playerName, teamName, number)
+            outputBox = displayOutputBox(root, 35, 1)
+            outputBox.delete("1.0", END)
+            outputBox.insert(END, res)
+            showRes(root, connection, res)
 
     class Games:
         def showGameResults(root, connection):                

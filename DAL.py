@@ -54,16 +54,9 @@ class TeamsDal:
         connection = db_utils.ensure_connection(connection)
         cursor = connection.cursor()
         try:
-            cursor.execute("SELECT getTeamId(%s)", (teamName,))
-            result = cursor.fetchone()
-
-            if result and result[0] == -1:
-                args = (teamName,)
-                cursor.callproc("addTeam", args)
-                connection.commit()
-                return 'Team added successfully.'
-            else:
-                return 'Team already exists.'
+            cursor.callproc("addTeam", (teamName,))
+            connection.commit()
+            return f'{teamName} are in the league.'
         except Exception as e:
             print(e)
             return 'Team was unable to be added.'
@@ -109,6 +102,19 @@ class PlayersDal:
         result = cursor.fetchall()
         cursor.close()
         return result
+    
+    def addPlayer(connection, playerName, teamName, jerseyNum):
+        connection = db_utils.ensure_connection(connection)
+        cursor = connection.cursor()
+        try:
+            cursor.callproc("addPlayer", (playerName, teamName, jerseyNum,))
+            connection.commit()
+            return f'{playerName} is in the league.'
+        except Exception as e:
+            print(e)
+            return 'Player was unable to be added.'
+        finally:
+            cursor.close()
     
     # def addTrip(connection, vesselName, passengerName, dateAndTime, lengthOfTrip, totalPassengers):
     #     cursor = connection.cursor()
