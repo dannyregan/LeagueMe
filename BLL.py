@@ -36,6 +36,10 @@ class Players:
         res = dal.PlayersDal.addPlayer(connection, playerName, teamName, jerseyNum)
         return res
     
+    def deletePlayer(connection, playerName):
+        res = dal.PlayersDal.deletePlayer(connection, playerName)
+        return res
+    
 class Games:
     def addGame(connection, homeTeam, awayTeam, date, gameType, completed):
         res = dal.GamesDal.addGame(connection, homeTeam, awayTeam, date, gameType, completed)

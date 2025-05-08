@@ -32,23 +32,26 @@ def app():
         topScorersButton.grid(row=0, column=2, pady=10)
 
         addTeamButton = Button(root, text="Add Team", command=lambda: Teams.addTeam(root, connection))
-        addTeamButton.grid(row=0, column=3, pady=10)
+        addTeamButton.grid(row=1, column=0, pady=10)
 
         addPlayerButton = Button(root, text="Add Player", command=lambda: Players.addPlayer(root, connection))
-        addPlayerButton.grid(row=0, column=4, pady=10)
+        addPlayerButton.grid(row=1, column=1, pady=10)
 
         addGameButton = Button(root, text="Add Game", command=lambda: Games.addGame(root, connection))
-        addGameButton.grid(row=0, column=5, pady=10)
+        addGameButton.grid(row=1, column=2, pady=10)
 
         addPointsButton = Button(root, text="Add Points", command=lambda: PointsScored.addPointsScored(root, connection))
-        addPointsButton.grid(row=0, column=6, pady=10)
+        addPointsButton.grid(row=1, column=3, pady=10)
+
+        deletePlayerButton = Button(root, text="Delete Player", command=lambda: Players.deletePlayer(root, connection))
+        deletePlayerButton.grid(row=1, column=4, pady=10)
 
     def displayOutputBox(root, w, h):
         if currentOutput["box"]:
             currentOutput["box"].destroy()
             currentOutput["box"] = None 
         outputBox = Text(root, width=w, height=h)
-        outputBox.grid(row=1, column=0, columnspan=6, padx=20, pady=20)
+        outputBox.grid(row=2, column=0, columnspan=6, padx=20, pady=20)
         currentOutput["box"] = outputBox 
         return outputBox
 
@@ -92,6 +95,28 @@ def app():
 
         def submitPlayer(root, connection, playerName, teamName, number):
             res = bll.Players.addPlayer(connection, playerName, teamName, number)
+            outputBox = displayOutputBox(root, 35, 1)
+            outputBox.delete("1.0", END)
+            outputBox.insert(END, res)
+            showRes(root, connection, res)
+
+        def deletePlayer(root, connection):
+            for widget in root.grid_slaves():
+                widget.grid_forget()
+            # Labels
+            title = Label(root, text='Delete Player')
+            title.grid(row=0, columnspan=2, padx=5)
+            nameLabel = Label(root, text='Name')
+            nameLabel.grid(row=1, column=0, padx=5)
+            # Inputs
+            name = Entry(root, width=20)
+            name.grid(row=1, column=1)
+            # Submit button
+            submitDeletePlayerButton = Button(root, text='Delete Player', command=lambda: Players.submitDeletePlayer(root, connection, name.get()))
+            submitDeletePlayerButton.grid(row=2, column=0, columnspan=2, pady=10, padx=10, ipadx=100)
+
+        def submitDeletePlayer(root, connection, playerName):
+            res = bll.Players.deletePlayer(connection, playerName)
             outputBox = displayOutputBox(root, 35, 1)
             outputBox.delete("1.0", END)
             outputBox.insert(END, res)

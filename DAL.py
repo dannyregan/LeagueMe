@@ -210,11 +210,16 @@ class GamesDal:
         cursor = connection.cursor()
         try:
             cursor.callproc("addgame", (homeTeam, awayTeam, date, gameType, completed,))
+            for result in cursor.stored_results():
+                res = result.fetchone()
+                break
+            if res[0] == -1:
+                return 'Team not found. Add the team first or try again.'
             connection.commit()
-            return f'Game has been added.'
+            return 'Game has been added.'
         except Exception as e:
             print(e)
-            return 'Game was unable to be added.'
+            return 'Game was unable to be added. Check your inputs and try again.'
         finally:
             cursor.close()
     
