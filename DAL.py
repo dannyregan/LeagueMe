@@ -111,9 +111,17 @@ class PlayersDal:
         try:
             cursor.callproc("addPlayer", (playerName, teamName, jerseyNum,))
             connection.commit()
-            return f'{playerName} is in the league.'
-        except Exception as e:
+            for result in cursor.stored_results():
+                res = result.fetchone()
+                break
+            if res[0] == -1:
+                return 'Player unable to be added. Another player with that name already exists, or the team does not exist.'
+            connection.commit()
+            return f'{playerName} has been added.'
+        except mysql.connector.Error as e:
             print(e)
+            if e.errno == 1172:
+                return 'Player was not added. A player with that name already exists.'
             return 'Player was unable to be added.'
         finally:
             cursor.close()
@@ -125,9 +133,9 @@ class PlayersDal:
             cursor.callproc("deletePlayer", (playerName,))
             connection.commit()
             return f'{playerName} has been deleted.'
-        except Exception as e:
+        except mysql.connector.Error as e:
             print(e)
-            return 'Player was unable to be deleted.'
+            return 'Player was unable to be added.'
         finally:
             cursor.close()
   

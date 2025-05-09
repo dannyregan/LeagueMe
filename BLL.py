@@ -38,7 +38,7 @@ class Views:
         tf, data = dal.TeamsDal.team_schedule(connection, teamName)
         if tf == True:
             headers = ['Home', 'Away', 'Date', 'Result', 'Season']
-            return tabulate.tabulate(data, headers=headers, tablefmt='fancy_grid')
+            return tabulate.tabulate(data, headers=headers, tablefmt='fancy_grid'), data
         else:
             return data
     
