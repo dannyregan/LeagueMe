@@ -14,11 +14,6 @@ def app():
     # Track if output box has info in it
     currentOutput = {"box": None}
 
-    # Rows/columns expand within the GUI
-    # for i in range(40):
-    #     root.grid_rowconfigure(i, weight=1)
-    #     root.grid_columnconfigure(i, weight=1)
-
     def showMainMenu(root, connection):
         root.geometry('1200x700')
         # Clear the GUI
@@ -34,7 +29,7 @@ def app():
         topScorersButton = Button(root, text="Top Scorers", command=lambda: Players.showTopScorers(root, connection))
         topScorersButton.grid(row=0, column=4, pady=10)
 
-        teamRosterButton = Button(root, text="Team Roster", command=lambda: Players.showTeamRoster(root, connection))
+        teamRosterButton = Button(root, text="Team Roster", command=lambda: Teams.showTeamRoster(root, connection))
         teamRosterButton.grid(row=0, column=5, pady=10)
 
         teamScheduleButton = Button(root, text="Team Schedule", command=lambda: Teams.showTeamSchedule(root, connection))
@@ -82,31 +77,10 @@ def app():
     class Players:
         def showTopScorers(root, connection):
             showMainMenu(root, connection)
-            outputBox = displayOutputBox(root, 75, 30)
-            outputText = bll.Views.displayTopScorers(connection)
-            outputBox.insert(END, outputText)
-
-        def showTeamRoster(root, connection):
-            showMainMenu(root, connection)
             for widget in root.grid_slaves():
                 widget.grid_forget()
-            # Labels
-            title = Label(root, text='Enter Team Name')
-            title.grid(row=0, columnspan=2, padx=5)
-            nameLabel = Label(root, text='Team Name')
-            nameLabel.grid(row=1, column=0, padx=5)
-            # Inputs
-            name = Entry(root, width=20)
-            name.grid(row=1, column=1)
-            # Submit button
-            submitShowTeamRosterButton = Button(root, text='View Roster', command=lambda: Players.submitShowTeamRoster(root, connection, name.get()))
-            submitShowTeamRosterButton.grid(row=2, column=0, columnspan=2, pady=10, padx=10, ipadx=100)
-
-        def submitShowTeamRoster(root, connection, teamName):
-            showMainMenu(root, connection)
-            outputBox = displayOutputBox(root, 75, 35)
-            outputText = bll.Views.displayTeamRoster(connection, teamName)
-            outputBox.delete("1.0", END)
+            outputBox = displayOutputBox(root, 75, 30)
+            outputText = bll.Views.displayTopScorers(connection)
             outputBox.insert(END, outputText)
 
         def addPlayer(root, connection):
@@ -199,7 +173,7 @@ def app():
             date.grid(row=3, column=1)
             season = Entry(root, width=20)
             season.grid(row=4, column=1)
-            
+            # Checkbox
             completed_var = BooleanVar()
             completed = Checkbutton(root, variable=completed_var)
             completed.grid(row=5, column=1)
@@ -238,7 +212,6 @@ def app():
             homeScore.grid(row=3, column=1)
             awayScore = Entry(root, width=20)
             awayScore.grid(row=4, column=1)
-
             # Submit button
             submitUpdateGameButton = Button(root, text='Update Game', command=lambda: Games.submitUpdateGame(root, connection, team.get(), date.get(), homeScore.get(), awayScore.get()))
             submitUpdateGameButton.grid(row=5, column=1, columnspan=2, pady=10, padx=10, ipadx=100)
@@ -288,25 +261,51 @@ def app():
             submitShowTeamScheduleButton = Button(root, text='View Schedule', command=lambda: Teams.submitShowTeamSchedule(root, connection, name.get()))
             submitShowTeamScheduleButton.grid(row=2, column=0, columnspan=2, pady=10, padx=10, ipadx=100)
 
+        def showTeamRoster(root, connection):
+            showMainMenu(root, connection)
+            for widget in root.grid_slaves():
+                widget.grid_forget()
+            # Labels
+            title = Label(root, text='Enter Team Name')
+            title.grid(row=0, columnspan=2, padx=5)
+            nameLabel = Label(root, text='Team Name')
+            nameLabel.grid(row=1, column=0, padx=5)
+            # Inputs
+            name = Entry(root, width=20)
+            name.grid(row=1, column=1)
+            # Submit button
+            submitShowTeamRosterButton = Button(root, text='View Roster', command=lambda: Players.submitShowTeamRoster(root, connection, name.get()))
+            submitShowTeamRosterButton.grid(row=2, column=0, columnspan=2, pady=10, padx=10, ipadx=100)
+
+        def submitShowTeamRoster(root, connection, teamName):
+            showMainMenu(root, connection)
+            outputBox = displayOutputBox(root, 75, 35)
+            outputText = bll.Views.displayTeamRoster(connection, teamName)
+            outputBox.delete("1.0", END)
+            outputBox.insert(END, outputText)
+
         # My advanced feature lets you download the schedule as a pdf
         # https://www.youtube.com/watch?v=B3OCXBL4Hxs
         def getPdf(data, teamName):
-            filename = f"{teamName}-schedule.pdf"
-            pdf = SimpleDocTemplate(
+            filename = f"{teamName}-schedule.pdf" # Creates filename
+            pdf = SimpleDocTemplate( # Creates a blank pdf file
                 filename,
                 pagesize=letter
             )
+            # Removes 'datetime.datetime' from the data
             formatted_data = [
                 tuple(item.strftime("%Y-%m-%d %H:%M") if isinstance(item, datetime.datetime) else item for item in row)
                 for row in data
             ]
             headers = ['Home', 'Away', 'Date', 'Result', 'Type']
+            # Appends headers to the data
             formatted_and_headers = [headers] + formatted_data
-            print(formatted_and_headers)
+            # Creates a table with the data
             table = Table(formatted_and_headers)
             elems = []
-            elems.append(table)
-            pdf.build(elems)
+            elems.append(table) # Insert the table into an array
+            pdf.build(elems) # Fill the pdf with the table
+            # Provide user with a message
             title = Label(root, text='PDF added to the directory in which this app is saved.')
             title.grid(row=8, column=2, columnspan=4)
 

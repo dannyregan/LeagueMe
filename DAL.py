@@ -42,6 +42,8 @@ class DBConnection:
 
 class TeamsDal:
     def league_standings(connection):
+        # Ensures that the app maintains connection with the database
+        # The connection is checked and re-established if necessary
         connection = db_utils.ensure_connection(connection)
         cursor = connection.cursor()
         query = "CALL showLeagueStandings();"
@@ -118,10 +120,8 @@ class PlayersDal:
                 return 'Player unable to be added. Another player with that name already exists, or the team does not exist.'
             connection.commit()
             return f'{playerName} has been added.'
-        except mysql.connector.Error as e:
+        except Exception as e:
             print(e)
-            if e.errno == 1172:
-                return 'Player was not added. A player with that name already exists.'
             return 'Player was unable to be added.'
         finally:
             cursor.close()
@@ -133,7 +133,7 @@ class PlayersDal:
             cursor.callproc("deletePlayer", (playerName,))
             connection.commit()
             return f'{playerName} has been deleted.'
-        except mysql.connector.Error as e:
+        except Exception as e:
             print(e)
             return 'Player was unable to be added.'
         finally:
