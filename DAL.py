@@ -65,6 +65,22 @@ class TeamsDal:
             return False, 'Unable to find roster.'
         finally:
             cursor.close()
+
+    def team_schedule(connection, teamName):
+        connection = db_utils.ensure_connection(connection)
+        cursor = connection.cursor()
+        try:
+            cursor.callproc("getTeamSchedule", (teamName,))
+            for result in cursor.stored_results():
+                fetched = result.fetchall()
+                if not fetched:
+                    return False, 'Schedule not found. Try again.'
+                return True, fetched
+        except Exception as e:
+            print(e)
+            return False, 'Unable to find schedule.'
+        finally:
+            cursor.close()
     
     def addTeam(connection, teamName):
         connection = db_utils.ensure_connection(connection)

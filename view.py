@@ -34,6 +34,9 @@ def app():
         teamRosterButton = Button(root, text="Team Roster", command=lambda: Players.showTeamRoster(root, connection))
         teamRosterButton.grid(row=0, column=5, pady=10)
 
+        teamScheduleButton = Button(root, text="Team Schedule", command=lambda: Teams.showTeamSchedule(root, connection))
+        teamScheduleButton.grid(row=0, column=6, pady=10)
+
         addTeamButton = Button(root, text="Add Team", command=lambda: Teams.addTeam(root, connection))
         addTeamButton.grid(row=1, column=1, pady=10)
 
@@ -260,6 +263,28 @@ def app():
             outputBox.delete("1.0", END)
             outputBox.insert(END, res)
             showRes(root, connection, res)
+
+        def showTeamSchedule(root, connection):
+            for widget in root.grid_slaves():
+                widget.grid_forget()
+            # Labels
+            title = Label(root, text='Enter Team Name')
+            title.grid(row=0, columnspan=2, padx=5)
+            nameLabel = Label(root, text='Team Name')
+            nameLabel.grid(row=1, column=0, padx=5)
+            # Inputs
+            name = Entry(root, width=20)
+            name.grid(row=1, column=1)
+            # Submit button
+            submitShowTeamScheduleButton = Button(root, text='View Schedule', command=lambda: Teams.submitShowTeamSchedule(root, connection, name.get()))
+            submitShowTeamScheduleButton.grid(row=2, column=0, columnspan=2, pady=10, padx=10, ipadx=100)
+
+        def submitShowTeamSchedule(root, connection, teamName):
+            showMainMenu(root, connection)
+            outputBox = displayOutputBox(root, 75, 35)
+            outputText = bll.Views.displayTeamSchedule(connection, teamName)
+            outputBox.delete("1.0", END)
+            outputBox.insert(END, outputText)
 
     class PointsScored:
         def addPointsScored(root, connection):

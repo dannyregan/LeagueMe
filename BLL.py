@@ -33,6 +33,14 @@ class Views:
             return tabulate.tabulate(data, headers=headers, tablefmt='fancy_grid')
         else:
             return data
+        
+    def displayTeamSchedule(connection, teamName):
+        tf, data = dal.TeamsDal.team_schedule(connection, teamName)
+        if tf == True:
+            headers = ['Home', 'Away', 'Date', 'Result', 'Season']
+            return tabulate.tabulate(data, headers=headers, tablefmt='fancy_grid')
+        else:
+            return data
     
 class Teams:
     def addTeam(connection, teamName):
