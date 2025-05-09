@@ -26,6 +26,14 @@ class Views:
         headers = ['Team', 'Games Played', 'Wins', 'Losses', 'Ties', 'Win %']
         return tabulate.tabulate(data, headers=headers, tablefmt='fancy_grid')
     
+    def displayTeamRoster(connection, teamName):
+        tf, data = dal.TeamsDal.team_roster(connection, teamName)
+        if tf == True:
+            headers = ['Player', 'Number']
+            return tabulate.tabulate(data, headers=headers, tablefmt='fancy_grid')
+        else:
+            return data
+    
 class Teams:
     def addTeam(connection, teamName):
         res = dal.TeamsDal.addTeam(connection, teamName)

@@ -23,38 +23,42 @@ def app():
             widget.grid_forget()
         # Add buttons
         leagueStandingsButton = Button(root, text="League Standings", command=lambda: Games.showLeagueStandings(root, connection))
-        leagueStandingsButton.grid(row=0, column=0, pady=10)
+        leagueStandingsButton.grid(row=0, column=2, pady=10)
 
         gameResultsButton = Button(root, text="Game Results", command=lambda: Games.showGameResults(root, connection))
-        gameResultsButton.grid(row=0, column=1, pady=10)
+        gameResultsButton.grid(row=0, column=3, pady=10)
 
         topScorersButton = Button(root, text="Top Scorers", command=lambda: Players.showTopScorers(root, connection))
-        topScorersButton.grid(row=0, column=2, pady=10)
+        topScorersButton.grid(row=0, column=4, pady=10)
+
+        teamRosterButton = Button(root, text="Team Roster", command=lambda: Players.showTeamRoster(root, connection))
+        teamRosterButton.grid(row=0, column=5, pady=10)
 
         addTeamButton = Button(root, text="Add Team", command=lambda: Teams.addTeam(root, connection))
-        addTeamButton.grid(row=1, column=0, pady=10)
+        addTeamButton.grid(row=1, column=1, pady=10)
 
         addPlayerButton = Button(root, text="Add Player", command=lambda: Players.addPlayer(root, connection))
-        addPlayerButton.grid(row=1, column=1, pady=10)
-
-        addGameButton = Button(root, text="Add Game", command=lambda: Games.addGame(root, connection))
-        addGameButton.grid(row=1, column=2, pady=10)
-
-        updateGameButton = Button(root, text="Update Game", command=lambda: Games.updateGame(root, connection))
-        updateGameButton.grid(row=1, column=3, pady=10)
-
-        addPointsButton = Button(root, text="Add Player Points", command=lambda: PointsScored.addPointsScored(root, connection))
-        addPointsButton.grid(row=1, column=4, pady=10)
+        addPlayerButton.grid(row=2, column=1, pady=10)
 
         deletePlayerButton = Button(root, text="Delete Player", command=lambda: Players.deletePlayer(root, connection))
-        deletePlayerButton.grid(row=1, column=5, pady=10)
+        deletePlayerButton.grid(row=3, column=1, pady=10)
+
+        addGameButton = Button(root, text="Add Game", command=lambda: Games.addGame(root, connection))
+        addGameButton.grid(row=4, column=1, pady=10)
+
+        updateGameButton = Button(root, text="Update Game Score", command=lambda: Games.updateGame(root, connection))
+        updateGameButton.grid(row=5, column=1, pady=10)
+
+        addPointsButton = Button(root, text="Add Player Points", command=lambda: PointsScored.addPointsScored(root, connection))
+        addPointsButton.grid(row=6, column=1, pady=10)
+
 
     def displayOutputBox(root, w, h):
         if currentOutput["box"]:
             currentOutput["box"].destroy()
             currentOutput["box"] = None 
         outputBox = Text(root, width=w, height=h)
-        outputBox.grid(row=2, column=0, columnspan=6, padx=20, pady=20)
+        outputBox.grid(row=1, column=2, rowspan=6, columnspan=6, padx=10, pady=10)
         currentOutput["box"] = outputBox 
         return outputBox
 
@@ -69,8 +73,30 @@ def app():
 
     class Players:
         def showTopScorers(root, connection):
-            outputBox = displayOutputBox(root, 75, 45)
+            outputBox = displayOutputBox(root, 75, 30)
             outputText = bll.Views.displayTopScorers(connection)
+            outputBox.insert(END, outputText)
+
+        def showTeamRoster(root, connection):
+            for widget in root.grid_slaves():
+                widget.grid_forget()
+            # Labels
+            title = Label(root, text='Enter Team Name')
+            title.grid(row=0, columnspan=2, padx=5)
+            nameLabel = Label(root, text='Team Name')
+            nameLabel.grid(row=1, column=0, padx=5)
+            # Inputs
+            name = Entry(root, width=20)
+            name.grid(row=1, column=1)
+            # Submit button
+            submitShowTeamRosterButton = Button(root, text='View Roster', command=lambda: Players.submitShowTeamRoster(root, connection, name.get()))
+            submitShowTeamRosterButton.grid(row=2, column=0, columnspan=2, pady=10, padx=10, ipadx=100)
+
+        def submitShowTeamRoster(root, connection, teamName):
+            showMainMenu(root, connection)
+            outputBox = displayOutputBox(root, 75, 35)
+            outputText = bll.Views.displayTeamRoster(connection, teamName)
+            outputBox.delete("1.0", END)
             outputBox.insert(END, outputText)
 
         def addPlayer(root, connection):
@@ -98,7 +124,7 @@ def app():
 
         def submitPlayer(root, connection, playerName, teamName, number):
             res = bll.Players.addPlayer(connection, playerName, teamName, number)
-            outputBox = displayOutputBox(root, 35, 1)
+            outputBox = displayOutputBox(root, 20, 1)
             outputBox.delete("1.0", END)
             outputBox.insert(END, res)
             showRes(root, connection, res)
@@ -127,12 +153,12 @@ def app():
 
     class Games:
         def showGameResults(root, connection):                
-            outputBox = displayOutputBox(root, 75, 45)
+            outputBox = displayOutputBox(root, 75,30)
             outputText = bll.Views.displayGameResults(connection)
             outputBox.insert(END, outputText)
         
         def showLeagueStandings(root, connection):
-            outputBox = displayOutputBox(root, 75, 45)
+            outputBox = displayOutputBox(root, 75, 30)
             outputText = bll.Views.displayLeagueStandings(connection)
             outputBox.insert(END, outputText)
 
