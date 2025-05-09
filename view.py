@@ -8,7 +8,6 @@ import BLL as bll
 def app():
     # GUI set up
     root = Tk()
-    connection = bll.connectToDB()
     root.title('league.me')
 
     # Track if output box has info in it
@@ -61,6 +60,15 @@ def app():
             currentOutput["box"] = None 
         outputBox = Text(root, width=w, height=h)
         outputBox.grid(row=1, column=2, rowspan=6, columnspan=6, padx=10, pady=10)
+        currentOutput["box"] = outputBox 
+        return outputBox
+    
+    def displaySignInError(root, w, h):
+        if currentOutput["box"]:
+            currentOutput["box"].destroy()
+            currentOutput["box"] = None 
+        outputBox = Text(root, width=w, height=h)
+        outputBox.grid(row=0, column=0, columnspan=6, padx=10, pady=10)
         currentOutput["box"] = outputBox 
         return outputBox
 
@@ -274,7 +282,7 @@ def app():
             name = Entry(root, width=20)
             name.grid(row=1, column=1)
             # Submit button
-            submitShowTeamRosterButton = Button(root, text='View Roster', command=lambda: Players.submitShowTeamRoster(root, connection, name.get()))
+            submitShowTeamRosterButton = Button(root, text='View Roster', command=lambda: Teams.submitShowTeamRoster(root, connection, name.get()))
             submitShowTeamRosterButton.grid(row=2, column=0, columnspan=2, pady=10, padx=10, ipadx=100)
 
         def submitShowTeamRoster(root, connection, teamName):
@@ -351,54 +359,58 @@ def app():
             outputBox.insert(END, res)
             showRes(root, connection, res)
 
-    # def submitSignIn(user, pswd, host, port):
-    #     global connection
-    #     connection = connectToDB(user, pswd, host, port)
+    def submitSignIn(user, pswd, host, port, db):
+        global connection
+        connection = bll.connectToDB(user, pswd, host, port, db)
         
-    #     if connection:
-    #         showMainMenu(root, connection)
-    #     else:
-    #         root.geometry('500x100')
-    #         # Clear the GUI
-    #         for widget in root.grid_slaves():
-    #             widget.grid_forget()
-    #         outputBox = displayOutputBox(root, 90, 1)
-    #         outputBox.insert(END, 'Unable to sign in. Try again.')
+        if connection is not False:
+            showMainMenu(root, connection)
+        else:
+            # Clear the GUI
+            for widget in root.grid_slaves():
+                widget.grid_forget()
+            outputBox = displaySignInError(root, 30, 1)
+            outputBox.insert(END, 'Unable to sign in. Try again.')
 
-    #         okay = Button(root, text='Okay', command=lambda: signIn())
-    #         okay.grid(row=2, column=0, columnspan=2, padx=10, ipadx=100)
+            okay = Button(root, text='Okay', command=lambda: signIn())
+            okay.grid(row=2, column=0, columnspan=2, padx=10, ipadx=100)
 
-    # def signIn():
-    #     root.geometry('350x200')
-    #     for widget in root.grid_slaves():
-    #         widget.grid_forget()
-    #     # Sign in labels
-    #     title = Label(root, text='Sign In')
-    #     title.grid(row=0, columnspan=2)
-    #     userLabel = Label(root, text='Username')
-    #     userLabel.grid(row=1, column=0, padx=5)
-    #     pswdLabel = Label(root, text='Password')
-    #     pswdLabel.grid(row=2, column=0, padx=5)
-    #     hostLabel = Label(root, text='Hostname')
-    #     hostLabel.grid(row=3, column=0, padx=5)
-    #     portLabel = Label(root, text='Port')
-    #     portLabel.grid(row=4, column=0, padx=5)
-    #     # Sign in inputs
-    #     user = Entry(root, width=20)
-    #     user.grid(row=1, column=1)
-    #     user.insert(0, 'root')
-    #     pswd = Entry(root, width=20)
-    #     pswd.grid(row=2, column=1)
-    #     pswd.insert(0, '')
-    #     host = Entry(root, width=20)
-    #     host.grid(row=3, column=1)
-    #     host.insert(0, '127.0.0.1')
-    #     port = Entry(root, width=20)
-    #     port.grid(row=4, column=1)
-    #     port.insert(0, '3306')
+    def signIn():
+        root.geometry('350x300')
+        for widget in root.grid_slaves():
+            widget.grid_forget()
+        # Sign in labels
+        title = Label(root, text='Sign In')
+        title.grid(row=0, columnspan=2)
+        userLabel = Label(root, text='Username')
+        userLabel.grid(row=1, column=0, padx=5)
+        pswdLabel = Label(root, text='Password')
+        pswdLabel.grid(row=2, column=0, padx=5)
+        hostLabel = Label(root, text='Hostname')
+        hostLabel.grid(row=3, column=0, padx=5)
+        portLabel = Label(root, text='Port')
+        portLabel.grid(row=4, column=0, padx=5)
+        dbLabel = Label(root, text='Database')
+        dbLabel.grid(row=5, column=0, padx=5)
+        # Sign in inputs
+        user = Entry(root, width=20)
+        user.grid(row=1, column=1)
+        user.insert(0, 'root')
+        pswd = Entry(root, width=20)
+        pswd.grid(row=2, column=1)
+        pswd.insert(0, '')
+        host = Entry(root, width=20)
+        host.grid(row=3, column=1)
+        host.insert(0, '127.0.0.1')
+        port = Entry(root, width=20)
+        port.grid(row=4, column=1)
+        port.insert(0, '3306')
+        db = Entry(root, width=20)
+        db.grid(row=5, column=1)
+        db.insert(0, 'league')
 
-    #     submitButton = Button(root, text='Sign In', command=lambda: submitSignIn(user.get(), pswd.get(), host.get(), port.get()))
-    #     submitButton.grid(row=5, column=0, columnspan=2, pady=10, padx=10, ipadx=100)
+        submitButton = Button(root, text='Sign In', command=lambda: submitSignIn(user.get(), pswd.get(), host.get(), port.get(), db.get()))
+        submitButton.grid(row=6, column=0, columnspan=2, pady=10, padx=10, ipadx=100)
 
-    showMainMenu(root, connection)
+    signIn()
     root.mainloop()

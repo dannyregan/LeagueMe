@@ -3,31 +3,28 @@ import mysql.connector
 import db_utils
 
 class DBConnection:
-#     def __init__(self, user, password, host, port):
-    def __init__(self):
-    # self.password = password
-    # self.user = user
-    # self.host = host
-    # self.port = port
+    def __init__(self, user, password, host, port, db):
+        self.password = password
+        self.user = user
+        self.host = host
+        self.port = port
+        self.db   = db
         self.config = {
-    #   'user': self.user,
-    #   'password': self.password,
-    #   'host': self.host,
-    #   'port': self.port,
-            'user': 'root',
-            'password': 'legends',
-            'host': '127.0.0.1',
-            'port': '3306',
-            'database': 'league'
+            'user': self.user,
+            'password': self.password,
+            'host': self.host,
+            'port': self.port,
+            'database': self.db
         }
-        self.connection = None
+        self.connection = False
 
     def connect(self):
         try:
             self.connection = mysql.connector.connect(**self.config)
             return self.connection
-        except:
-            return self.connection
+        except Exception as e:
+            print(e)
+            return False
   
     def cursor(self):
         if self.connection:

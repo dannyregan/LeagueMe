@@ -1,3 +1,11 @@
+__author__ = "Danny Regan"
+__contributors__ = ["Amanda Menier"]
+__created__ = "2025-05-06"
+__version__ = "1.0.0"
+__last_updated__ = "2025-05-09"
+__description__ = "A GUI app that manages the 'league' MySQL database. It provides funtionality for interacting with the database. Users are able to create teams, add players to those teams, input game information and results, and track basic player statistics."
+
+
 # References:
 # https://tkdocs.com/tutorial/
 # https://docs.python.org/3/library/tkinter.html#text-widget

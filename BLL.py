@@ -2,10 +2,10 @@ import tabulate
 
 import DAL as dal
 
-def connectToDB():
-    db = dal.DBConnection()
+def connectToDB(user, password, host, port, database):
+    db = dal.DBConnection(user, password, host, port, database)
     connection = db.connect()
-    if connection:
+    if connection is not False:
         return connection
     else:
         return False
